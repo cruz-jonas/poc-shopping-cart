@@ -1,6 +1,6 @@
-package com.poc.demo.service;
+package com.poc.service;
 
-import com.poc.demo.dto.Product;
+import com.poc.dto.Product;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

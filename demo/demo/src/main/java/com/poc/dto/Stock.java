@@ -1,4 +1,4 @@
-package com.poc.demo.dto;
+package com.poc.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

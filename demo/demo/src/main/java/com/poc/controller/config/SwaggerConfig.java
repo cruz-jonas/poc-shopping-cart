@@ -1,4 +1,4 @@
-package com.poc.demo.controller.config;
+package com.poc.controller.config;
 
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;

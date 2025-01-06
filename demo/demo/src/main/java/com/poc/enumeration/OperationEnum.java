@@ -1,4 +1,4 @@
-package com.poc.demo.enumeration;
+package com.poc.enumeration;
 
 public enum OperationEnum {
 

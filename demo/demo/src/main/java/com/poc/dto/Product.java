@@ -1,4 +1,4 @@
-package com.poc.demo.dto;
+package com.poc.dto;
 
 import lombok.*;
 
@@ -9,7 +9,6 @@ import lombok.*;
 @EqualsAndHashCode
 public class Product {
 
-    private Long id;
     private String name;
     private double price;
     private int stockQuantity;

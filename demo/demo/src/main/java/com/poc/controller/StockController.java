@@ -1,16 +1,15 @@
-package com.poc.demo.controller;
+package com.poc.controller;
 
-import com.poc.demo.controller.model.request.ProductRequest;
-import com.poc.demo.service.StockService;
+import com.poc.dto.Product;
+import com.poc.service.StockService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @Tag(name = "Products Stock Endpoints")
 @RestController
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class StockController {
 
-    @Value("${token}")
-    private String token;
     private final StockService stockService;
 
     @Operation(
@@ -27,8 +24,21 @@ public class StockController {
             summary = "Register product"
     )
     @PostMapping()
-    public ResponseEntity<HttpStatus> registerProduct(@RequestHeader(value = "Authorization") String token,
-                                                          @Valid @RequestBody ProductRequest productRequest) {
+    public ResponseEntity<HttpStatus> registerProduct(@RequestBody Product productRequest) throws IOException {
+
+        stockService.insertOrUpdate(productRequest);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(
+            method = "POST",
+            summary = "Remove product"
+    )
+    @PostMapping("/remove/{name}")
+    public ResponseEntity<HttpStatus> removeProduct(@PathVariable String name) throws IOException {
+
+        stockService.remove(name);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
