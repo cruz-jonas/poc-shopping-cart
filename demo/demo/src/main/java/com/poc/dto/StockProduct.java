@@ -6,12 +6,11 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
-public class Product {
+public class StockProduct {
 
     private String name;
     private double price;
-    private int stockQuantity;
+    private int quantity;
     private String category;
 
     @Override
@@ -19,7 +18,7 @@ public class Product {
         return "Product{" +
                 "name='" + name + '\'' +
                 ", price=" + price +
-                ", stockQuantity=" + stockQuantity +
+                ", quantity=" + quantity +
                 ", category='" + category + '\'' +
                 '}';
     }

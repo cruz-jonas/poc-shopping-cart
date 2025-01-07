@@ -15,7 +15,7 @@ public class ProductRequest {
     private String name;
     @NotNull(message = "Mandatory to inform price")
     private double price;
-    private int stockQuantity;
+    private int quantity;
     private String category;
 
 }

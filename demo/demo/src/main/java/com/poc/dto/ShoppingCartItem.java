@@ -6,22 +6,18 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
-public class ShoppingCartItem {
+public class ShoppingCartItem extends StockProduct {
 
-    private String name;
-    private double price;
-    private int quantity;
     private Double total;
 
     public Double getTotal() {
-        total = quantity * price;
+        total = super.getQuantity() * super.getPrice();
         return total;
     }
 
     @Override
     public String toString() {
-        return name + " - " + quantity + "un - Unit Price €" + price + " - Total Item €" + getTotal();
+        return super.getName() + " - " + super.getQuantity() + "un - Unit Price €" + super.getPrice() + " - Total Item €" + getTotal();
     }
 
 }

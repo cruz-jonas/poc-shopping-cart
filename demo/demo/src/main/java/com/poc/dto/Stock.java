@@ -13,11 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 public class Stock {
 
-    private List<Product> products;
-
-    // Add a new product to inventory
-    public void addProduct(Product product) {
-        this.products.add(product);
-    }
+    private List<StockProduct> products;
 
 }

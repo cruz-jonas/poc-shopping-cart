@@ -3,7 +3,7 @@ package com.poc.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.poc.controller.model.request.ProductRequest;
-import com.poc.dto.Product;
+import com.poc.dto.StockProduct;
 import com.poc.dto.Stock;
 import com.poc.enumeration.OperationEnum;
 import lombok.RequiredArgsConstructor;
@@ -21,15 +21,13 @@ import java.util.Optional;
 public class StockService {
 
     private static final String STOCK_PATH = "demo/src/main/java/com/poc/repository/stock.json";
-    private final ProductService productService;
     private final ObjectMapper objectMapper;
 
     // print updated stock from file
-    public void printProducts() throws InterruptedException, IOException {
-        Stock stock = loadStock();
+    public void printProducts(Stock stock) throws InterruptedException {
         Thread.sleep(1000L);
         stock.getProducts().stream()
-                .filter(p -> p.getStockQuantity() > 0)
+                .filter(p -> p.getQuantity() > 0)
                 .forEach(System.out::println);
         System.out.println();
     }
@@ -48,54 +46,51 @@ public class StockService {
     }
 
 
-    // update stock quantity of a product when insert or remove from cart
-    public boolean updateStock(Stock stock, String name, int quantity, OperationEnum operationEnum) throws IOException {
-        Product product = productService.findProductByName(stock.getProducts(), name);
-        if (product != null) {
-            int currentStock = product.getStockQuantity();
-            if (operationEnum.getOperation().equals("MINUS")) {
-                product.setStockQuantity(currentStock + quantity);
-                updateStock(stock.getProducts());
-                return true;
-            } else if (currentStock >= quantity) {
-                product.setStockQuantity(currentStock - quantity);
-                updateStock(stock.getProducts());
-                return true;
-            } else {
-                System.out.println("*** Not enough stock available for " + name);
-            }
-        } else {
-            System.out.println("*** Product not found: " + name);
-        }
-        return false;
+    // update stock when insert or remove from cart
+    public void updateStock(Stock stock, String productName, int quantity, OperationEnum operationEnum) {
+        stock.getProducts().stream()
+                .filter(stockProduct -> stockProduct.getName().equalsIgnoreCase(productName))
+                .findFirst()
+                .ifPresentOrElse(availableProduct -> {
+                    int currentStock = availableProduct.getQuantity();
+                    if (operationEnum.getOperation().equals("MINUS")) {
+                        availableProduct.setQuantity(currentStock + quantity);
+                        updateStock(stock.getProducts());
+                    } else if (currentStock >= quantity) {
+                        availableProduct.setQuantity(currentStock - quantity);
+                        updateStock(stock.getProducts());
+                    } else {
+                        System.out.println("*** Not enough stock available for " + productName);
+                    }
+                }, () -> System.out.println("*** Product not found: " + productName));
     }
 
     // Update stock file
-    public void updateStock(List<Product> products) throws IOException {
+    private void updateStock(List<StockProduct> products) {
         try {
             objectMapper.writeValue(new File(STOCK_PATH), products);
         } catch(IOException e) {
-            throw new IOException("*** Error updating Stock to file: " + e.getMessage());
+            System.out.println("*** Error updating Stock to file: " + e.getMessage());
         }
     }
 
     // insert product in stock file if new or update if existing
     public void insertOrUpdate(ProductRequest newProduct) throws IOException {
-        List<Product> products = loadStock().getProducts();
+        List<StockProduct> products = loadStock().getProducts();
 
-        Optional<Product> existingProduct = products.stream()
+        Optional<StockProduct> existingProduct = products.stream()
                 .filter(product -> product.getName().equals(newProduct.getName()))
                 .findFirst();
 
-        Product product;
+        StockProduct product;
         if (existingProduct.isPresent()) {
             product = existingProduct.get();
             product.setPrice(verifyPrice(newProduct, product));
-            product.setStockQuantity(product.getStockQuantity() + newProduct.getStockQuantity());
+            product.setQuantity(product.getQuantity() + newProduct.getQuantity());
         } else {
-            product = new Product();
+            product = new StockProduct();
             product.setName(newProduct.getName());
-            product.setStockQuantity(newProduct.getStockQuantity());
+            product.setQuantity(newProduct.getQuantity());
             product.setPrice(newProduct.getPrice());
             product.setCategory(Objects.nonNull(newProduct.getCategory()) ? newProduct.getCategory() : "Undefined Category");
             products.add(product);
@@ -103,20 +98,20 @@ public class StockService {
         updateStock(products);
     }
 
+    // remove product if exist
+    public void remove(String name) throws IOException {
+        List<StockProduct> products = loadStock().getProducts();
+        products.removeIf(product -> product.getName().equalsIgnoreCase(name));
+        updateStock(products);
+
+    }
+
     // verify if price different
-    private Double verifyPrice(ProductRequest newProduct, Product product) {
+    private Double verifyPrice(ProductRequest newProduct, StockProduct product) {
         if (newProduct.getPrice() != product.getPrice()) {
             System.out.println("Different prices - the previous price will be maintained - please contact management.");
         }
         return product.getPrice();
-    }
-
-    // remove product if exist
-    public void remove(String name) throws IOException {
-        List<Product> products = loadStock().getProducts();
-        products.removeIf(product -> product.getName().equalsIgnoreCase(name));
-        updateStock(products);
-
     }
 
 }
