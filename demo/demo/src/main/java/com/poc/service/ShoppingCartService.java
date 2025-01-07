@@ -5,6 +5,7 @@ import com.poc.dto.Product;
 import com.poc.dto.ShoppingCart;
 import com.poc.dto.ShoppingCartItem;
 import com.poc.dto.Stock;
+import com.poc.enumeration.OperationEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +21,10 @@ public class ShoppingCartService {
     private final StockService stockService;
     private final ProductService productService;
 
+    // insert item to cart and update stock file
     public void insertItem(String productName, int quantity, ShoppingCart cart) throws IOException {
         Stock stock = stockService.loadStock();
-        if (stockService.updateStock(stock, productName, quantity, false)) {
+        if (stockService.updateStock(stock, productName, quantity, OperationEnum.PLUS)) {
             List<Product> products = stock.getProducts();
             Product stockProduct = productService.findProductByName(products, productName);
             if (Objects.nonNull(stockProduct)) {
@@ -33,7 +35,6 @@ public class ShoppingCartService {
                 addedProduct.setTotal(addedProduct.getQuantity() * stockProduct.getPrice());
                 addItem(cart, addedProduct);
                 cart.setTotal(cart.getTotal() + addedProduct.getTotal());
-                stockService.updateStock(stock.getProducts());
                 System.out.println("### Product added to the cart.");
                 System.out.println();
             }
@@ -43,24 +44,47 @@ public class ShoppingCartService {
         }
     }
 
+    // remove item from cart and update stock file
     public void removeItemFromCart(String productName, int quantity, ShoppingCart cart) throws IOException {
         Stock stock = stockService.loadStock();
-        ShoppingCartItem cartItem = cart.getItems().stream().filter(p -> p.getName().equalsIgnoreCase(productName)).findFirst().get();
-        if (cartItem.getQuantity() >= quantity) {
-            cartItem.setQuantity(cartItem.getQuantity() - quantity);
-            cart.setTotal(cart.getTotal() - cartItem.getTotal());
-            if (cartItem.getQuantity() == 0) {
-                cart.getItems().removeIf(p -> p.getName().equalsIgnoreCase(productName));
-            }
-            stockService.updateStock(stock, productName, quantity, true);
-            System.out.println("### Product quantity removed from the cart.");
-            System.out.println();
+        if(stockService.updateStock(stock, productName, quantity, OperationEnum.MINUS)) {
+            cart.getItems().stream()
+                    .filter(p -> p.getName().equalsIgnoreCase(productName))
+                    .findFirst()
+                    .ifPresent(cartItem -> {
+                        Double toRemoveFromTotal = cartItem.getTotal();
+                        if (cartItem.getQuantity() >= quantity) {
+                            cartItem.setQuantity(cartItem.getQuantity() - quantity);
+                            cart.setTotal(cart.getTotal() - toRemoveFromTotal);
+                            if (cartItem.getQuantity() == 0) {
+                                cart.getItems().removeIf(p -> p.getName().equalsIgnoreCase(productName));
+                            }
+                            System.out.println("### Product quantity removed from the cart.");
+                            System.out.println();
+                        } else {
+                            System.out.println("### Product quantity requested greater than available to remove.");
+                            System.out.println();
+                        }
+                    });
         } else {
-            System.out.println("### Product quantity requested greater than available to remove.");
+            System.out.println("### Product not found to remove.");
             System.out.println();
         }
     }
 
+    // insert item into cart or update existing
+    public void addItem(ShoppingCart cart, ShoppingCartItem item) {
+        cart.getItems().stream()
+                .filter(streamedItem -> Objects.equals(item.getName(), streamedItem.getName()))
+                .findFirst()
+                .ifPresentOrElse(streamedItem -> {
+                            streamedItem.setQuantity(streamedItem.getQuantity() + item.getQuantity());
+                            streamedItem.setTotal(streamedItem.getTotal() + item.getTotal());
+                        },
+                        () -> cart.getItems().add(item));
+    }
+
+    // print updated cart
     public void printCart(ShoppingCart shoppingCart) {
         System.out.println();
         System.out.println("### Here is your Shopping Cart:");
@@ -70,6 +94,7 @@ public class ShoppingCartService {
         System.out.println();
     }
 
+    // save file into C:/temp
     public void saveToJson(ShoppingCart cart) {
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -90,17 +115,6 @@ public class ShoppingCartService {
             System.err.println("*** Error saving the cart: " + e.getMessage());
             System.out.println();
         }
-    }
-
-    public void addItem(ShoppingCart cart, ShoppingCartItem item) {
-        cart.getItems().stream()
-                .filter(streamedItem -> Objects.equals(item.getName(), streamedItem.getName()))
-                .findFirst()
-                .ifPresentOrElse(streamedItem -> {
-                            streamedItem.setQuantity(streamedItem.getQuantity() + item.getQuantity());
-                            streamedItem.setTotal(streamedItem.getTotal() + item.getTotal());
-                        },
-                        () -> cart.getItems().add(item));
     }
 
 }

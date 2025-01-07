@@ -44,7 +44,7 @@ public class DemoApplication {
                 case 1 -> {
                     System.out.println("### Available products:");
                     System.out.println();
-                    stockService.printProducts(stockService.loadStock());
+                    stockService.printProducts();
                 }
                 case 2 -> {
                     System.out.println();

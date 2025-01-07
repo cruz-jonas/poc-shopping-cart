@@ -8,7 +8,7 @@ import java.util.List;
 @Service
 public class ProductService {
 
-    // Find a product by name
+    // find a product by name
     public Product findProductByName(List<Product> products, String name) {
         return products.stream()
                 .filter(product -> product.getName().equalsIgnoreCase(name))

@@ -1,9 +1,10 @@
 package com.poc.controller;
 
-import com.poc.dto.Product;
+import com.poc.controller.model.request.ProductRequest;
 import com.poc.service.StockService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,22 +20,16 @@ public class StockController {
 
     private final StockService stockService;
 
-    @Operation(
-            method = "POST",
-            summary = "Register product"
-    )
+    @Operation(method = "POST", summary = "Register product")
     @PostMapping()
-    public ResponseEntity<HttpStatus> registerProduct(@RequestBody Product productRequest) throws IOException {
+    public ResponseEntity<HttpStatus> registerProduct(@Valid @RequestBody ProductRequest productRequest) throws IOException {
 
         stockService.insertOrUpdate(productRequest);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(
-            method = "POST",
-            summary = "Remove product"
-    )
+    @Operation(method = "POST", summary = "Remove product")
     @PostMapping("/remove/{name}")
     public ResponseEntity<HttpStatus> removeProduct(@PathVariable String name) throws IOException {
 
