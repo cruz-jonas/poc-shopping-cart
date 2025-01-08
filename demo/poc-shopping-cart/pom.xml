@@ -8,11 +8,11 @@
 		<version>3.3.7</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.poc</groupId>
-	<artifactId>demo</artifactId>
+	<groupId>demo</groupId>
+	<artifactId>poc-shopping-cart</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>demo</name>
-	<description>Demo project for Spring Boot</description>
+	<packaging>jar</packaging>
+	<description>POC of a Shopping Cart with Java/Spring Boot</description>
 	<url/>
 	<licenses>
 		<license/>

@@ -20,7 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class StockService {
 
-    private static final String STOCK_PATH = "demo/src/main/java/com/poc/repository/stock.json";
+    private static final String STOCK_PATH = "poc-shopping-cart/src/main/java/com/poc/repository/stock.json";
     private final ObjectMapper objectMapper;
 
     // print updated stock from file
