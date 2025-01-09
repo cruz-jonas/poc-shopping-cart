@@ -1,0 +1,14 @@
+{
+  "products": [
+    { "name": "Bookshelf", "quantity": 10, "price": 5.0 },
+    { "name": "HDMI Cable", "quantity": 20, "price": 10.0 },
+    { "name": "Laptop Stand", "quantity": 15, "price": 7.5 },
+    { "name": "USB Flash Drive", "quantity": 50, "price": 3.0 },
+    { "name": "Charger", "quantity": 30, "price": 2.5 },
+    { "name": "Webcam", "quantity": 5, "price": 20.0 },
+    { "name": "Headphones", "quantity": 25, "price": 8.0 },
+    { "name": "Keyboard", "quantity": 40, "price": 4.0 },
+    { "name": "Mouse", "quantity": 12, "price": 6.0 },
+    { "name": "Monitor", "quantity": 8, "price": 15.0 }
+  ]
+}

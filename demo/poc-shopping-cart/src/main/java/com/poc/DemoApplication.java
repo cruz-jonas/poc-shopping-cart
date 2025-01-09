@@ -21,7 +21,7 @@ public class DemoApplication {
         Thread.sleep(1000L);
         ObjectMapper objectMapper = new ObjectMapper();
         StockService stockService = new StockService(objectMapper);
-        ShoppingCartService shoppingCartService = new ShoppingCartService(stockService);
+        ShoppingCartService shoppingCartService = new ShoppingCartService();
         ShoppingCart cart = new ShoppingCart(new ArrayList<>(), 0.0);
         Scanner scanner = new Scanner(System.in);
         Stock stock = stockService.loadStock();

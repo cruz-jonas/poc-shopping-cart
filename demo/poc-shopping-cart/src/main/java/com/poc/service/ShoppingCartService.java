@@ -15,8 +15,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ShoppingCartService {
 
-    private final StockService stockService;
-
     // insert item to cart
     public boolean insertItemToCart(Stock stock, String productName, int quantity, ShoppingCart cart) {
         return stock.getProducts()
@@ -28,6 +26,7 @@ public class ShoppingCartService {
                     addedProduct.setName(availableProduct.getName());
                     addedProduct.setPrice(availableProduct.getPrice());
                     addedProduct.setQuantity(quantity);
+                    addedProduct.setCategory(availableProduct.getCategory());
                     addedProduct.setTotal(addedProduct.getQuantity() * availableProduct.getPrice());
                     addItem(cart, addedProduct);
                     cart.setTotal(cart.getTotal() + addedProduct.getTotal());
@@ -93,7 +92,7 @@ public class ShoppingCartService {
 
     // save file into C:/temp
     public boolean saveToJson(ShoppingCart cart) {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
             File directory = new File("C:/temp");
             if (!directory.exists()) {
@@ -101,7 +100,7 @@ public class ShoppingCartService {
             }
 
             File file = new File(directory, "shoppingCart.json");
-            mapper.writeValue(file, cart);
+            objectMapper.writeValue(file, cart);
 
             System.out.println();
             System.out.println("### Cart saved as " + file.getAbsolutePath());
