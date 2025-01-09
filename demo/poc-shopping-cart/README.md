@@ -22,9 +22,6 @@ Before execute, is mandatory have the follow tools in your machine
 4) Execute project with Maven
    `mvn spring-boot:run`
 
-5) Execute project with Maven
-   `mvn spring-boot:run`
-
 **The application will be available to use in your command terminal.
 
 ## SWAGGER
