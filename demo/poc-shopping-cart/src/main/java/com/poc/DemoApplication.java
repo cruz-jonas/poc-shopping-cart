@@ -78,6 +78,8 @@ public class DemoApplication {
                     }
                 }
                 case 6 -> {
+                    cart.getItems()
+                            .forEach(item -> stockService.updateStock(stock, item.getName(), item.getQuantity(), OperationEnum.MINUS));
                     System.out.println("### Exiting... Thank you!");
                     return;
                 }
